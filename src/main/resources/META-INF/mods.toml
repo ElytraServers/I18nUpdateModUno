@@ -1,0 +1,37 @@
+modLoader = "javafml"
+loaderVersion = "[39,)"
+license = "GNU AGPL 3.0"
+issueTrackerURL="https://github.com/ElytraServers/I18nUpdateModUno/issues"
+[[mods]]
+modId = "i18n_update_mod_uno"
+version = "${file.jarVersion}"
+displayName = "I18nUpdateModUnofficial"
+#updateJSONURL="http://myurl.me/"
+displayURL="https://github.com/ElytraServers/I18nUpdateModUno"
+#logoFile="I18nUpdateModUnofficial.png"
+credits="Foundation of Tartaric_Acid and Translation Providers from CFPAOrg"
+authors="Taskeren"
+description = '''
+提供和自动更新简体中文翻译的模组。
+
+翻译仓库由酒石酸和 CFPA 团队维护
+https://github.com/CFPAOrg/Minecraft-Mod-Language-Package
+
+原模组由酒石酸开发，本模组仅将旧版逻辑搬到 1.18.1 原有问题尚未得到修复。
+尚未支持 Patchouli 翻译。
+
+本模组仅作为 1.18 前瞻体验使用，所有翻译采用 1.16 版本，请时刻关注原模组更新！！
+'''
+
+[[dependencies.i18n_update_mod_uno]]
+modId = "forge"
+mandatory = true
+versionRange = "[39,)"
+ordering = "NONE"
+side = "CLIENT"
+[[dependencies.i18n_update_mod_uno]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18.1,1.19)"
+ordering = "NONE"
+side = "CLIENT"
