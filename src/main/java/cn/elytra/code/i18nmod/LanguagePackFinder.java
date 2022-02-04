@@ -7,7 +7,7 @@ import net.minecraft.server.packs.repository.RepositorySource;
 
 import java.util.function.Consumer;
 
-import static cn.elytra.code.i18nmod.I18nUpdateModUnofficial.LANGUAGE_PACK;
+import static cn.elytra.code.i18nmod.config.I18nConfig.getCacheFilePath;
 
 public class LanguagePackFinder implements RepositorySource {
 
@@ -15,7 +15,7 @@ public class LanguagePackFinder implements RepositorySource {
 	public void loadPacks(Consumer<Pack> packConsumer, Pack.PackConstructor constructor) {
 		var pack = Pack.create(
 				"Minecraft-Mod-Language-Modpack-1-18.zip",
-				true, () -> new FilePackResources(LANGUAGE_PACK.toFile()),
+				true, () -> new FilePackResources(getCacheFilePath().toFile()),
 				constructor, Pack.Position.TOP, PackSource.DEFAULT
 		);
 		packConsumer.accept(pack);

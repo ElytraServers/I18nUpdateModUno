@@ -1,8 +1,10 @@
 package cn.elytra.code.i18nmod;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
+import cn.elytra.code.i18nmod.config.I18nConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,18 +18,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import static cn.elytra.code.i18nmod.config.I18nConfig.*;
+
 @Mod(I18nUpdateModUnofficial.MODID)
 public class I18nUpdateModUnofficial {
 
 	public static final String MODID = "i18n_update_mod_uno";
 	public static final Path CACHE_DIR = Paths.get(System.getProperty("user.home"), MODID, "1.18");
-	public static final Path LANGUAGE_PACK = CACHE_DIR.resolve("Minecraft-Mod-Language-Modpack-1.16.zip");
-	public static final String LINK = "http://downloader1.meitangdehulu.com:22943/Minecraft-Mod-Language-Modpack-1-16.zip";
-	public static final long MAX_INTERVAL_DAYS = 7;
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	public I18nUpdateModUnofficial() {
 		LOGGER.info("正在加载 I18nUpdateMod 非官方版");
+
+		// 准备配置文档
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, I18nConfig.CONFIG);
 
 		// 设置语言为简体中文
 		Minecraft.getInstance().options.languageCode = "zh_cn";
@@ -44,7 +48,7 @@ public class I18nUpdateModUnofficial {
 		if(isCacheExists()) {
 			long interval = getIntervalSinceCacheLastModification();
 			if(interval > 0) {
-				if(interval >= MAX_INTERVAL_DAYS) { // 此部分需要测试
+				if(interval >= getMaxIntervalDays()) { // 此部分需要测试
 					LOGGER.info("正在更新翻译包");
 					downloadAndCache();
 				}
@@ -57,7 +61,7 @@ public class I18nUpdateModUnofficial {
 	}
 
 	static boolean isCacheExists() {
-		return Files.exists(LANGUAGE_PACK);
+		return Files.exists(getCacheFilePath());
 	}
 
 	/**
@@ -67,7 +71,7 @@ public class I18nUpdateModUnofficial {
 	static long getIntervalSinceCacheLastModification() {
 		if(isCacheExists()) {
 			try {
-				long fileTime = Files.getLastModifiedTime(LANGUAGE_PACK).toMillis();
+				long fileTime = Files.getLastModifiedTime(getCacheFilePath()).toMillis();
 				long nowTime  = System.currentTimeMillis();
 				return TimeUnit.MICROSECONDS.toDays(nowTime - fileTime);
 			} catch(IOException ex) {
@@ -79,28 +83,26 @@ public class I18nUpdateModUnofficial {
 		}
 	}
 
-	static boolean downloadAndCache() {
+	static void downloadAndCache() {
 		if(isCacheExists()) {
 			try { // 重命名旧包
-				Files.move(LANGUAGE_PACK, LANGUAGE_PACK.getParent().resolve(SimpleDateFormat.getInstance().format(new Date())+"-OldPack.zip"));
+				Files.move(getCacheFilePath(), getCacheFilePath().getParent().resolve(SimpleDateFormat.getInstance().format(new Date())+"-OldPack.zip"));
 			} catch(IOException ex) {
 				try {
-					Files.delete(LANGUAGE_PACK);
+					Files.delete(getCacheFilePath());
 					LOGGER.warn("无法重命名旧翻译包，已删除", ex);
 				} catch(IOException ex2) {
 					LOGGER.error("无法重命名旧翻译包，且无法删除", ex2);
-					return false;
+					return;
 				}
 			}
 		}
 
 		try {
-			FileUtils.copyURLToFile(new URL(LINK), LANGUAGE_PACK.toFile());
-			LOGGER.info("新翻译包已缓存于 {}", LANGUAGE_PACK);
-			return true;
+			FileUtils.copyURLToFile(new URL(getDownloadUrl()), getCacheFilePath().toFile());
+			LOGGER.info("新翻译包已缓存于 {}", getCacheFilePath());
 		} catch(IOException ex) {
 			LOGGER.error("无法下载翻译包", ex);
-			return false;
 		}
 
 		// Minecraft.getInstance().getResourcePackRepository().addPackFinder(new LanguagePackFinder());
