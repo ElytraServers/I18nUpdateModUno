@@ -18,7 +18,7 @@ public class I18nConfig {
 
 		PROP_DOWNLOAD_URL = builder
 				.comment("用于下载翻译包的链接")
-				.define("downloadUrl", "http://downloader1.meitangdehulu.com:22943/Minecraft-Mod-Language-Modpack-1-16.zip");
+				.define("downloadUrl", "http://downloader1.meitangdehulu.com:22943/Minecraft-Mod-Language-Modpack-1-18.zip");
 
 		PROP_CACHE_FILE_NAME = builder
 				.comment("本地保存的翻译包缓存名称")
